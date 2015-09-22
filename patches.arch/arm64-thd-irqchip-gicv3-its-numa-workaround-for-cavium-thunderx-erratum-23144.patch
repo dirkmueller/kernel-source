@@ -22,19 +22,19 @@ updatated as per Marc Zyngier's review comments.
  drivers/irqchip/irq-gic-v3-its.c |   49 +++++++++++++++++++++++++++++++++------
  1 file changed, 42 insertions(+), 7 deletions(-)
 
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -40,7 +40,8 @@
- #include "irqchip.h"
+Index: current/drivers/irqchip/irq-gic-v3-its.c
+===================================================================
+--- current.orig/drivers/irqchip/irq-gic-v3-its.c
++++ current/drivers/irqchip/irq-gic-v3-its.c
+@@ -42,6 +42,7 @@
  
  #define ITS_FLAGS_CMDQ_NEEDS_FLUSHING		(1ULL << 0)
--#define ITS_FLAGS_CAVIUM_THUNDERX		(1ULL << 1)
-+#define ITS_WORKAROUND_CAVIUM_22375            (1ULL << 1)
+ #define ITS_FLAGS_WORKAROUND_CAVIUM_22375	(1ULL << 1)
 +#define ITS_WORKAROUND_CAVIUM_23144            (1ULL << 2)
  
  #define RDIST_FLAGS_PROPBASE_NEEDS_FLUSHING	(1 << 0)
  
-@@ -73,6 +74,7 @@ struct its_node {
+@@ -74,6 +75,7 @@ struct its_node {
  	struct list_head	its_device_list;
  	u64			flags;
  	u32			ite_size;
@@ -42,7 +42,7 @@ updatated as per Marc Zyngier's review comments.
  };
  
  #define ITS_ITT_ALIGN		SZ_256
-@@ -607,11 +609,20 @@ static void its_eoi_irq(struct irq_data
+@@ -608,11 +610,20 @@ static void its_eoi_irq(struct irq_data
  static int its_set_affinity(struct irq_data *d, const struct cpumask *mask_val,
  			    bool force)
  {
@@ -64,16 +64,7 @@ updatated as per Marc Zyngier's review comments.
  	if (cpu >= nr_cpu_ids)
  		return -EINVAL;
  
-@@ -843,7 +854,7 @@ static int its_alloc_tables(struct its_n
- 	u64 typer;
- 	u32 ids;
- 
--	if (its->flags & ITS_FLAGS_CAVIUM_THUNDERX) {
-+	if (its->flags & ITS_WORKAROUND_CAVIUM_22375) {
- 		/*
- 		 * erratum 22375: only alloc 8MB table size
- 		 * erratum 24313: ignore memory access type
-@@ -1371,9 +1382,14 @@ static void its_irq_domain_activate(stru
+@@ -1372,9 +1383,14 @@ static void its_irq_domain_activate(stru
  {
  	struct its_device *its_dev = irq_data_get_irq_chip_data(d);
  	u32 event = its_get_event_id(d);
@@ -89,44 +80,35 @@ updatated as per Marc Zyngier's review comments.
  
  	/* Map the GIC IRQ and event to the device */
  	its_send_mapvi(its_dev, d->hwirq, event);
-@@ -1456,11 +1472,19 @@ static int its_force_quiescent(void __io
- 	}
+@@ -1464,6 +1480,14 @@ static void __maybe_unused its_enable_qu
+ 	its->flags |= ITS_FLAGS_WORKAROUND_CAVIUM_22375;
  }
  
--static void its_enable_cavium_thunderx(void *data)
-+static void its_enable_cavium_thunderx_22375(void *data)
- {
- 	struct its_node *its = data;
- 
--	its->flags |= ITS_FLAGS_CAVIUM_THUNDERX;
-+	its->flags |= ITS_WORKAROUND_CAVIUM_22375;
-+}
-+
 +static void its_enable_cavium_thunderx_23144(void *data)
 +{
-+	struct its_node *its = data;
++       struct its_node *its = data;
 +
-+	if (num_possible_nodes() > 1)
-+		its->flags |= ITS_WORKAROUND_CAVIUM_23144;
- }
- 
- static const struct gic_capabilities its_errata[] = {
-@@ -1468,7 +1492,13 @@ static const struct gic_capabilities its
- 		.desc	= "ITS: Cavium errata 22375, 24313",
- 		.iidr	= 0xa100034c,	/* ThunderX pass 1.x */
++       if (num_possible_nodes() > 1)
++               its->flags |= ITS_WORKAROUND_CAVIUM_23144;
++}
++
+ static const struct gic_quirk its_quirks[] = {
+ #ifdef CONFIG_CAVIUM_ERRATUM_22375
+ 	{
+@@ -1472,6 +1496,12 @@ static const struct gic_quirk its_quirks
  		.mask	= 0xffff0fff,
--		.init	= its_enable_cavium_thunderx,
-+		.init	= its_enable_cavium_thunderx_22375,
-+	},
-+	{
-+		.desc	= "ITS: Cavium errata 23144",
-+		.iidr	= 0xa100034c,	/* ThunderX pass 1.x */
-+		.mask	= 0xffff0fff,
-+		.init	= its_enable_cavium_thunderx_23144,
+ 		.init	= its_enable_quirk_cavium_22375,
  	},
++       {
++               .desc   = "ITS: Cavium errata 23144",
++               .iidr   = 0xa100034c,   /* ThunderX pass 1.x */
++               .mask   = 0xffff0fff,
++               .init   = its_enable_cavium_thunderx_23144,
++       },
+ #endif
  	{
  	}
-@@ -1489,6 +1519,7 @@ static int its_probe(struct device_node
+@@ -1492,6 +1522,7 @@ static int its_probe(struct device_node
  	u32 val;
  	u64 baser, tmp;
  	int err;
@@ -134,7 +116,7 @@ updatated as per Marc Zyngier's review comments.
  
  	err = of_address_to_resource(node, 0, &res);
  	if (err) {
-@@ -1496,6 +1527,9 @@ static int its_probe(struct device_node
+@@ -1499,6 +1530,9 @@ static int its_probe(struct device_node
  		return -ENXIO;
  	}
  
@@ -144,7 +126,7 @@ updatated as per Marc Zyngier's review comments.
  	its_base = ioremap(res.start, resource_size(&res));
  	if (!its_base) {
  		pr_warn("%s: unable to map registers\n", node->full_name);
-@@ -1531,6 +1565,7 @@ static int its_probe(struct device_node
+@@ -1534,6 +1568,7 @@ static int its_probe(struct device_node
  	its->phys_base = res.start;
  	its->msi_chip.of_node = node;
  	its->ite_size = ((readl_relaxed(its_base + GITS_TYPER) >> 4) & 0xf) + 1;
