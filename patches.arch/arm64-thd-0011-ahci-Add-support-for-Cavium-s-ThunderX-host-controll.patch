@@ -27,11 +27,9 @@ Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
- drivers/ata/ahci.c | 5 ++++-
+ drivers/ata/ahci.c |    5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index be1cb06..ade50e9 100644
 --- a/drivers/ata/ahci.c
 +++ b/drivers/ata/ahci.c
 @@ -53,6 +53,7 @@
@@ -42,7 +40,7 @@ index be1cb06..ade50e9 100644
  	AHCI_PCI_BAR_ENMOTUS	= 2,
  	AHCI_PCI_BAR_STANDARD	= 5,
  };
-@@ -1461,11 +1462,13 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -1462,11 +1463,13 @@ static int ahci_init_one(struct pci_dev
  		dev_info(&pdev->dev,
  			 "PDC42819 can only drive SATA devices with this driver\n");
  
@@ -55,8 +53,5 @@ index be1cb06..ade50e9 100644
 +	else if (pdev->vendor == 0x177d && pdev->device == 0xa01c)
 +		ahci_pci_bar = AHCI_PCI_BAR_CAVIUM;
  
- 	/*
- 	 * The JMicron chip 361/363 contains one SATA controller and one
--- 
-1.7.12.4
-
+ 	/* acquire resources */
+ 	rc = pcim_enable_device(pdev);
