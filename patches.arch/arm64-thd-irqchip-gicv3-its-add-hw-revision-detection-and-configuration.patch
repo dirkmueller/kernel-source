@@ -29,15 +29,13 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
- drivers/irqchip/irq-gic-common.c | 11 +++++++++++
- drivers/irqchip/irq-gic-common.h |  9 +++++++++
- drivers/irqchip/irq-gic-v3-its.c | 16 ++++++++++++++++
+ drivers/irqchip/irq-gic-common.c |   11 +++++++++++
+ drivers/irqchip/irq-gic-common.h |    9 +++++++++
+ drivers/irqchip/irq-gic-v3-its.c |   16 ++++++++++++++++
  3 files changed, 36 insertions(+)
 
-Index: current/drivers/irqchip/irq-gic-common.c
-===================================================================
---- current.orig/drivers/irqchip/irq-gic-common.c
-+++ current/drivers/irqchip/irq-gic-common.c
+--- a/drivers/irqchip/irq-gic-common.c
++++ b/drivers/irqchip/irq-gic-common.c
 @@ -21,6 +21,17 @@
  
  #include "irq-gic-common.h"
@@ -56,10 +54,8 @@ Index: current/drivers/irqchip/irq-gic-common.c
  int gic_configure_irq(unsigned int irq, unsigned int type,
  		       void __iomem *base, void (*sync_access)(void))
  {
-Index: current/drivers/irqchip/irq-gic-common.h
-===================================================================
---- current.orig/drivers/irqchip/irq-gic-common.h
-+++ current/drivers/irqchip/irq-gic-common.h
+--- a/drivers/irqchip/irq-gic-common.h
++++ b/drivers/irqchip/irq-gic-common.h
 @@ -20,10 +20,19 @@
  #include <linux/of.h>
  #include <linux/irqdomain.h>
@@ -80,10 +76,8 @@ Index: current/drivers/irqchip/irq-gic-common.h
 +		void *data);
  
  #endif /* _IRQ_GIC_COMMON_H */
-Index: current/drivers/irqchip/irq-gic-v3-its.c
-===================================================================
---- current.orig/drivers/irqchip/irq-gic-v3-its.c
-+++ current/drivers/irqchip/irq-gic-v3-its.c
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
 @@ -38,6 +38,8 @@
  
  #include "irqchip.h"

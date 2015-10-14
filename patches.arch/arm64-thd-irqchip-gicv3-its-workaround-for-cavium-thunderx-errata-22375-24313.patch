@@ -29,15 +29,13 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
- arch/arm64/Kconfig               | 17 +++++++++++++++++
- drivers/irqchip/irq-gic-v3-its.c | 37 +++++++++++++++++++++++++++++++++----
+ arch/arm64/Kconfig               |   17 +++++++++++++++++
+ drivers/irqchip/irq-gic-v3-its.c |   37 +++++++++++++++++++++++++++++++++----
  2 files changed, 50 insertions(+), 4 deletions(-)
 
-Index: current/arch/arm64/Kconfig
-===================================================================
---- current.orig/arch/arm64/Kconfig
-+++ current/arch/arm64/Kconfig
-@@ -412,6 +412,23 @@ config ARM64_ERRATUM_845719
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -432,6 +432,23 @@ config ARM64_ERRATUM_843419
  
  	  If unsure, say Y.
  
@@ -61,10 +59,8 @@ Index: current/arch/arm64/Kconfig
  config CAVIUM_ERRATUM_23154
  	bool "Cavium erratum 23154: Access to ICC_IAR1_EL1 is not sync'ed"
  	default y
-Index: current/drivers/irqchip/irq-gic-v3-its.c
-===================================================================
---- current.orig/drivers/irqchip/irq-gic-v3-its.c
-+++ current/drivers/irqchip/irq-gic-v3-its.c
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
 @@ -40,7 +40,8 @@
  
  #include "irq-gic-common.h"
