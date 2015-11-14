@@ -4,6 +4,7 @@ Date: Wed, 5 Aug 2015 02:23:39 +0530
 Subject: [PATCH 05/26] PCI: Build setup-irq.o for arm64
 Git-commit: 459a07721c113b807ffcaa7bc98dd5d26beb39d5
 Patch-mainline: v4.3-rc1
+Reference: fate#319484
 
 ARM64 requires setup-irq.o to provide pci_fixup_irqs() implementation.  We
 are adding this now to support the pci-host-generic host controller, but we

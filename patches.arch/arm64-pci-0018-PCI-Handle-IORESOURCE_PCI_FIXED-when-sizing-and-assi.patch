@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Thu, 1 Oct 2015 12:04:13 -0700
 Subject: [PATCH 18/26] PCI: Handle IORESOURCE_PCI_FIXED when sizing and assigning resources.
 Patch-mainline: Submitted, https://patchwork.ozlabs.org/patch/527060/
+Reference: fate#319484
 
 The new Enhanced Allocation (EA) capability support creates resources
 with the IORESOURCE_PCI_FIXED set.  This causes a couple of problems:

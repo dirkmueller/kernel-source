@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Mon, 12 Oct 2015 16:23:03 -0700
 Subject: [PATCH 21/26] irq-gic-v3-its: Setup PCI requester ID.
 Patch-mainline: Submitted, https://lkml.org/lkml/2015/10/8/890
+Reference: fate#319484
 
 DO NOT UPSTREAM.  For Linux v4.3, a different patch
 is needed and has been submitted.

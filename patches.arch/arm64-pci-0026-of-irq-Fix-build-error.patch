@@ -6,6 +6,7 @@ Mime-version: 1.0
 Content-type: text/plain; charset=UTF-8
 Content-transfer-encoding: 8bit
 Patch-mainline: Not yet, not sure if this is not an internal dependency
+Reference: fate#319484
 
  drivers/of/irq.c: In function ‘of_msi_map_rid’:
  drivers/of/irq.c:605:60: error: dereferencing pointer to incomplete type

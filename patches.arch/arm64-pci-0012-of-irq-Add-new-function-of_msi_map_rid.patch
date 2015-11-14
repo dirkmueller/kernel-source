@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Tue, 22 Sep 2015 14:36:43 -0700
 Subject: [PATCH 12/26] of/irq: Add new function of_msi_map_rid()
 Patch-mainline: Submitted, http://lkml.iu.edu/hypermail/linux/kernel/1510.1/00898.html
+Reference: fate#319484
 
 The device tree property "msi-map" specifies how to create the PCI
 requester id used in some MSI controllers.  Add a new function

@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Wed, 16 Sep 2015 16:26:20 -0700
 Subject: [PATCH 25/26] net, thunder, bgx: Start to use standard firmware node infrastructure.
 Patch-mainline: Not yet, tbd by Cavium
+Reference: fate#319484
 
 In the case of OF device tree, the firmware information is attached to
 the BGX device structure in the standard manner, so use the firmware

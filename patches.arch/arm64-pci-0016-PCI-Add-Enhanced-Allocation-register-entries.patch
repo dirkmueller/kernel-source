@@ -3,6 +3,7 @@ From: "Sean O. Stalley" <sean.stalley@intel.com>
 Date: Wed, 23 Sep 2015 15:27:43 -0700
 Subject: [PATCH 16/26] PCI: Add Enhanced Allocation register entries
 Patch-mainline: Submitted, https://lkml.org/lkml/2015/8/20/528
+Reference: fate#319484
 
 Add registers defined in PCI-SIG's Enhanced allocation ECN.
 

@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Fri, 11 Sep 2015 14:59:44 -0700
 Subject: [PATCH 08/26] PCI: generic: Quit clobbering our pci_ops.
 Patch-mainline: Submitted http://www.spinics.net/lists/linux-pci/msg44838.html
+Reference: fate#319484
 
 The pci-host-generic driver keeps a global struct pci_ops which it
 then patches with the .map_bus method appropriate for the bus device.

@@ -3,6 +3,7 @@ From: Mark Rutland <mark.rutland@arm.com>
 Date: Thu, 23 Jul 2015 17:52:44 +0100
 Subject: [PATCH 11/26] Docs: dt: Add PCI MSI map bindings
 Patch-mainline: Submitted, http://lists.infradead.org/pipermail/linux-arm-kernel/2015-July/358834.html
+Reference: fate#319484
 
 Currently msi-parent is used by a few bindings to describe the
 relationship between a PCI root complex and a single MSI controller, but

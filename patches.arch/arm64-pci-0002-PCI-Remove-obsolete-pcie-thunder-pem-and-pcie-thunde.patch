@@ -4,6 +4,7 @@ Date: Mon, 19 Oct 2015 16:57:46 -0700
 Subject: [PATCH 02/26] PCI: Remove obsolete pcie-thunder-pem and pcie-thunder
  drivers.
 Patch-mainline: Never, this is a revert of a internal patch
+Reference: fate#319484
 
 Signed-off-by: David Daney <david.daney@cavium.com>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>

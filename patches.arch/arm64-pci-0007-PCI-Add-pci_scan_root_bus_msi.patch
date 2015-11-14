@@ -4,6 +4,7 @@ Date: Mon, 3 Aug 2015 21:27:10 -0500
 Subject: [PATCH 07/26] PCI: Add pci_scan_root_bus_msi()
 Git-commit: d2a7926d42b3b46e45b4e44dc3302b2701ec0856
 Patch-mainline: v4.3-rc1
+Reference: fate#319484
 
 Add a pci_scan_root_bus_msi() interface so an arch can specify the MSI
 controller up front.  This removes the need for a pcibios callback to set

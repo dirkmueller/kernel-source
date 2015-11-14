@@ -3,6 +3,7 @@ From: David Daney <david.daney@cavium.com>
 Date: Mon, 12 Oct 2015 16:21:11 -0700
 Subject: [PATCH 20/26] PCI: hack up pci-host-generic for msi-domain.
 Patch-mainline: Never, should backport patches from v4.3
+Reference: fate#319484
 
 DO NOT UPSTREAM.
 
