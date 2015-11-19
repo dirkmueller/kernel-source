@@ -1,22 +1,24 @@
-From 4c2390a07d7b09417b7f5c6ca470ea5aaf31fac7 Mon Sep 17 00:00:00 2001
+From 111839917fccf4f74d50ad937321acc6a07eb9c3 Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
-Date: Thu, 1 Oct 2015 12:23:46 -0700
-Subject: [PATCH 19/26] PCI: Handle Enhanced Allocation (EA) capability for SRIOV devices.
-Patch-mainline: Submitted, https://lkml.org/lkml/2015/10/20/1101
+Date: Thu, 29 Oct 2015 17:35:40 -0500
+Subject: [PATCH] PCI: Handle Enhanced Allocation capability for SR-IOV devices
+Git-commit: 111839917fccf4f74d50ad937321acc6a07eb9c3
+Patch-mainline: v4.4-rc1
 Reference: fate#319484
 
-SRIOV BARs can be specified via EA entries.  Extend the EA parser to
-extract the SRIOV BAR resources, and modify sriov_init() to use
-resources previously obtained via EA.
+SR-IOV BARs can be specified via EA entries.  Extend the EA parser to
+extract the SRIOV BAR resources, and modify sriov_init() to use resources
+previously obtained via EA.
 
-Acked-by: Sean O. Stalley <sean.stalley@intel.com>
 Signed-off-by: David Daney <david.daney@cavium.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Acked-by: Sean O. Stalley <sean.stalley@intel.com>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
  drivers/pci/iov.c | 11 +++++++++--
- drivers/pci/pci.c |  7 +++++++
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ drivers/pci/pci.c |  6 ++++++
+ 2 files changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
 index ee0ebff..c789e68 100644
@@ -41,17 +43,16 @@ index ee0ebff..c789e68 100644
  			continue;
  		if (resource_size(res) & (PAGE_SIZE - 1)) {
 diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 1539c0b..72af60a 100644
+index 8d796c0..364f98b 100644
 --- a/drivers/pci/pci.c
 +++ b/drivers/pci/pci.c
-@@ -2163,6 +2163,13 @@ static struct resource *pci_ea_get_resource(struct pci_dev *dev, u8 bei,
+@@ -2176,6 +2176,12 @@ static struct resource *pci_ea_get_resource(struct pci_dev *dev, u8 bei,
  {
  	if (bei <= PCI_EA_BEI_BAR5 && prop <= PCI_EA_P_IO)
  		return &dev->resource[bei];
 +#ifdef CONFIG_PCI_IOV
 +	else if (bei >= PCI_EA_BEI_VF_BAR0 && bei <= PCI_EA_BEI_VF_BAR5 &&
-+		 (prop == PCI_EA_P_VIRT_MEM ||
-+		  prop == PCI_EA_P_VIRT_MEM_PREFETCH))
++		 (prop == PCI_EA_P_VF_MEM || prop == PCI_EA_P_VF_MEM_PREFETCH))
 +		return &dev->resource[PCI_IOV_RESOURCES +
 +				      bei - PCI_EA_BEI_VF_BAR0];
 +#endif

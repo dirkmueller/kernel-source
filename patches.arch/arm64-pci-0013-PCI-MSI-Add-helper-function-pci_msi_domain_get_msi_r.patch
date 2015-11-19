@@ -1,8 +1,9 @@
-From 6dd61e6956eb98f0bb97521bc939b0faee418cd6 Mon Sep 17 00:00:00 2001
+From b6eec9b717d4dcb39ef024b8a3b619a32468b01e Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
-Date: Wed, 16 Sep 2015 09:53:17 -0700
-Subject: [PATCH 13/26] PCI/MSI: Add helper function pci_msi_domain_get_msi_rid().
-Patch-mainline: Submitted, http://lkml.iu.edu/hypermail/linux/kernel/1510.1/00895.html
+Date: Thu, 8 Oct 2015 15:10:49 -0700
+Subject: [PATCH] PCI/MSI: Add helper function pci_msi_domain_get_msi_rid().
+Git-commit: b6eec9b717d4dcb39ef024b8a3b619a32468b01e
+Patch-mainline: v4.4-rc1
 Reference: fate#319484
 
 Add pci_msi_domain_get_msi_rid() to return the MSI requester id (RID).
@@ -13,16 +14,18 @@ Initially supports mapping the RID via OF device tree.  In the future,
 this could be extended to use ACPI _IORT tables as well.
 
 Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 Signed-off-by: David Daney <david.daney@cavium.com>
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
- drivers/pci/msi.c   | 30 ++++++++++++++++++++++++++++++
+ drivers/pci/msi.c   | 32 ++++++++++++++++++++++++++++++++
  include/linux/msi.h |  1 +
- 2 files changed, 31 insertions(+)
+ 2 files changed, 33 insertions(+)
 
 diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index f66be86..6826be7 100644
+index ddd59fe..5ab5c4f 100644
 --- a/drivers/pci/msi.c
 +++ b/drivers/pci/msi.c
 @@ -20,6 +20,7 @@
@@ -33,7 +36,7 @@ index f66be86..6826be7 100644
  
  #include "pci.h"
  
-@@ -1329,4 +1330,33 @@ struct irq_domain *pci_msi_create_default_irq_domain(struct device_node *node,
+@@ -1327,4 +1328,35 @@ struct irq_domain *pci_msi_create_default_irq_domain(struct fwnode_handle *fwnod
  
  	return domain;
  }
@@ -57,21 +60,23 @@ index f66be86..6826be7 100644
 + */
 +u32 pci_msi_domain_get_msi_rid(struct irq_domain *domain, struct pci_dev *pdev)
 +{
++	struct device_node *of_node;
 +	u32 rid = 0;
 +
 +	pci_for_each_dma_alias(pdev, get_msi_id_cb, &rid);
 +
-+	if (domain->of_node)
-+		rid = of_msi_map_rid(&pdev->dev, domain->of_node, rid);
++	of_node = irq_domain_get_of_node(domain);
++	if (of_node)
++		rid = of_msi_map_rid(&pdev->dev, of_node, rid);
 +
 +	return rid;
 +}
  #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
 diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 8ac4a68..003df57 100644
+index 32a24b9..8772375 100644
 --- a/include/linux/msi.h
 +++ b/include/linux/msi.h
-@@ -238,6 +238,7 @@ irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
+@@ -294,6 +294,7 @@ irq_hw_number_t pci_msi_domain_calc_hwirq(struct pci_dev *dev,
  					  struct msi_desc *desc);
  int pci_msi_domain_check_cap(struct irq_domain *domain,
  			     struct msi_domain_info *info, struct device *dev);
