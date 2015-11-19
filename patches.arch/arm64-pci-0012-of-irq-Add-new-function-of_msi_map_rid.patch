@@ -2,7 +2,8 @@ From 3a7667cc9a73ca66710aae30f25bc3ddbaa6e5d4 Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
 Date: Tue, 22 Sep 2015 14:36:43 -0700
 Subject: [PATCH 12/26] of/irq: Add new function of_msi_map_rid()
-Patch-mainline: Submitted, http://lkml.iu.edu/hypermail/linux/kernel/1510.1/00898.html
+Git-Commit: 8db02d8b4089fa8098a170738e8ae7939aa8ae7a
+Patch-mainline: v4.4-rc1
 Reference: fate#319484
 
 The device tree property "msi-map" specifies how to create the PCI
