@@ -1,25 +1,30 @@
 From 55451b7c58ab14237074e3c1fe8784d849de2b7c Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
 Date: Fri, 11 Sep 2015 14:59:44 -0700
-Subject: [PATCH 08/26] PCI: generic: Quit clobbering our pci_ops.
-Patch-mainline: Submitted http://www.spinics.net/lists/linux-pci/msg44838.html
+Subject: PCI: generic: Allow multiple hosts with different map_bus() methods
+Patch-commit: 9a28033753ca9e86593e15050c7ae02fbc03f9ae
+Patch-mainline: v4.4-rc1
 Reference: fate#319484
 
-The pci-host-generic driver keeps a global struct pci_ops which it
-then patches with the .map_bus method appropriate for the bus device.
-A problem arises when the driver is used for two different types of
-bus devices, the .map_bus method for the last device probed clobbers
-the method for all previous devices.  The result, only the last bus
-device probed has the proper .map_bus, and the others fail.
+The generic driver kept a global struct pci_ops ("gen_pci_ops") which it
+patched with the .map_bus() method appropriate for the bus device.  This is
+a problem when we have two different types of bus devices: the .map_bus()
+method for the last device probed clobbers the method for previous devices.
+The result is that only the last bus device probed has the correct
+.map_bus(), and the others fail.
 
-Move the struct pci_ops into the bus specific structure, and
-initialize a pointer to it when the bus device is probed.
+Move the struct pci_ops into the bus-specific structure and initialize a
+pointer to it when the bus device is probed.
 
-Acked-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: David Daney <david.daney@cavium.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
+Different pci_scan_root_bus function parameter.
+
  drivers/pci/host/pci-host-generic.c |   26 ++++++++++++++------------
  1 file changed, 14 insertions(+), 12 deletions(-)
 
