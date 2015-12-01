@@ -23,8 +23,6 @@ Acked-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Matthias Brugger <mbrugger@suse.com>
 
 ---
-Different pci_scan_root_bus function parameter.
-
  drivers/pci/host/pci-host-generic.c |   27 +++++++++++++++------------
  1 file changed, 15 insertions(+), 12 deletions(-)
 
