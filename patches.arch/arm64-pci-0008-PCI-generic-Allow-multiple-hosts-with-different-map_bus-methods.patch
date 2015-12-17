@@ -2,7 +2,7 @@ From 55451b7c58ab14237074e3c1fe8784d849de2b7c Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
 Date: Fri, 11 Sep 2015 14:59:44 -0700
 Subject: PCI: generic: Allow multiple hosts with different map_bus() methods
-Patch-commit: 9a28033753ca9e86593e15050c7ae02fbc03f9ae
+Git-commit: 9a28033753ca9e86593e15050c7ae02fbc03f9ae
 Patch-mainline: v4.4-rc1
 Reference: fate#319484
 

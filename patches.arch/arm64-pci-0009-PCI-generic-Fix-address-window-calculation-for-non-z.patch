@@ -2,7 +2,7 @@ From 85c36bb8056c6686090f6dc4ebb21139589c0f10 Mon Sep 17 00:00:00 2001
 From: David Daney <david.daney@cavium.com>
 Date: Wed, 23 Sep 2015 11:51:11 -0700
 Subject: PCI: generic: Fix address window calculation for non-zero starting bus
-Patch-commit: f6225c3a0c1f2ef908244c31b91d62066360ce1d
+Git-commit: f6225c3a0c1f2ef908244c31b91d62066360ce1d
 Patch-mainline: v4.4-rc1
 Reference: fate#319484
 
