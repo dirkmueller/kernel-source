@@ -1,0 +1,139 @@
+From 04f4a8a14f809b5f6c926747e6492e6922125f0c Mon Sep 17 00:00:00 2001
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Date: Thu, 19 Feb 2015 10:54:45 +0000
+Subject: [PATCH 2/3] arm64: KVM: mangle MAIR register to prevent uncached
+ guest mappings
+Patch-mainline: no
+
+Mangle the memory attribute register values at each write to MAIR_EL1
+so that regions that the guest intends to map as device or uncached are
+in fact mapped as cached instead. This avoids incoherency issues when
+the guest bypassed the caches to access memory that the host has mapped
+as cached.
+
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+[agraf: s/0xbb/0xff as indicated on ML]
+Signed-off-by: Alexander Graf <agraf@suse.de>
+---
+ arch/arm64/kvm/sys_regs.c | 63 +++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 53 insertions(+), 10 deletions(-)
+
+diff --git a/arch/arm64/kvm/sys_regs.c b/arch/arm64/kvm/sys_regs.c
+index c370b40..0418999 100644
+--- a/arch/arm64/kvm/sys_regs.c
++++ b/arch/arm64/kvm/sys_regs.c
+@@ -134,6 +134,39 @@ static bool access_gic_sgi(struct kvm_vcpu *vcpu,
+	return true;
+ }
+
++static bool access_mair(struct kvm_vcpu *vcpu,
++			const struct sys_reg_params *p,
++			const struct sys_reg_desc *r)
++{
++	unsigned long val, mask;
++
++	BUG_ON(!p->is_write);
++
++	val = *vcpu_reg(vcpu, p->Rt);
++
++	if (!p->is_aarch32) {
++		/*
++		 * Mangle val so that all device and uncached attributes are
++		 * replaced with cached attributes.
++		 * For each attribute, check whether any of bit 7, bit 5 or bit
++		 * 4 are set. If not, it is a device or outer non-cacheable
++		 * mapping and we override it with inner, outer write-through,
++		 * read+write-allocate (0xff).
++		 * TODO: handle outer cacheable inner non-cacheable
++		 */
++		mask = ~(val >> 7 | val >> 5 | val >> 4) & 0x0101010101010101UL;
++		val = (val & ~(mask * 0xff)) | (mask * 0xff);
++
++		vcpu_sys_reg(vcpu, r->reg) = val;
++	} else {
++		if (!p->is_32bit)
++			vcpu_cp15_64_high(vcpu, r->reg) = val >> 32;
++		vcpu_cp15_64_low(vcpu, r->reg) = val & 0xffffffffUL;
++	}
++
++	return true;
++}
++
+ static bool trap_raz_wi(struct kvm_vcpu *vcpu,
+			const struct sys_reg_params *p,
+			const struct sys_reg_desc *r)
+@@ -211,6 +244,16 @@ static bool trap_debug_regs(struct kvm_vcpu *vcpu,
+	return true;
+ }
+
++static bool access_handled_at_el2(struct kvm_vcpu *vcpu,
++				  const struct sys_reg_params *params,
++				  const struct sys_reg_desc *r)
++{
++	kvm_debug("sys_reg write at %lx should have been handled in EL2\n",
++		  *vcpu_pc(vcpu));
++	print_sys_reg_instr(params);
++	return false;
++}
++
+ static void reset_amair_el1(struct kvm_vcpu *vcpu, const struct sys_reg_desc *r)
+ {
+	u64 amair;
+@@ -361,26 +404,26 @@ static const struct sys_reg_desc sys_reg_descs[] = {
+	  NULL, reset_val, CPACR_EL1, 0 },
+	/* TTBR0_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0010), CRm(0b0000), Op2(0b000),
+-	  access_vm_reg, reset_unknown, TTBR0_EL1 },
++	  access_handled_at_el2, reset_unknown, TTBR0_EL1 },
+	/* TTBR1_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0010), CRm(0b0000), Op2(0b001),
+-	  access_vm_reg, reset_unknown, TTBR1_EL1 },
++	  access_handled_at_el2, reset_unknown, TTBR1_EL1 },
+	/* TCR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0010), CRm(0b0000), Op2(0b010),
+-	  access_vm_reg, reset_val, TCR_EL1, 0 },
++	  access_handled_at_el2, reset_val, TCR_EL1, 0 },
+
+	/* AFSR0_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0101), CRm(0b0001), Op2(0b000),
+-	  access_vm_reg, reset_unknown, AFSR0_EL1 },
++	  access_handled_at_el2, reset_unknown, AFSR0_EL1 },
+	/* AFSR1_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0101), CRm(0b0001), Op2(0b001),
+-	  access_vm_reg, reset_unknown, AFSR1_EL1 },
++	  access_handled_at_el2, reset_unknown, AFSR1_EL1 },
+	/* ESR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0101), CRm(0b0010), Op2(0b000),
+-	  access_vm_reg, reset_unknown, ESR_EL1 },
++	  access_handled_at_el2, reset_unknown, ESR_EL1 },
+	/* FAR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0110), CRm(0b0000), Op2(0b000),
+-	  access_vm_reg, reset_unknown, FAR_EL1 },
++	  access_handled_at_el2, reset_unknown, FAR_EL1 },
+	/* PAR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b0111), CRm(0b0100), Op2(0b000),
+	  NULL, reset_unknown, PAR_EL1 },
+@@ -394,10 +437,10 @@ static const struct sys_reg_desc sys_reg_descs[] = {
+
+	/* MAIR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b1010), CRm(0b0010), Op2(0b000),
+-	  access_vm_reg, reset_unknown, MAIR_EL1 },
++	  access_mair, reset_unknown, MAIR_EL1 },
+	/* AMAIR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b1010), CRm(0b0011), Op2(0b000),
+-	  access_vm_reg, reset_amair_el1, AMAIR_EL1 },
++	  access_handled_at_el2, reset_amair_el1, AMAIR_EL1 },
+
+	/* VBAR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b1100), CRm(0b0000), Op2(0b000),
+@@ -412,7 +455,7 @@ static const struct sys_reg_desc sys_reg_descs[] = {
+
+	/* CONTEXTIDR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b1101), CRm(0b0000), Op2(0b001),
+-	  access_vm_reg, reset_val, CONTEXTIDR_EL1, 0 },
++	  access_handled_at_el2, reset_val, CONTEXTIDR_EL1, 0 },
+	/* TPIDR_EL1 */
+	{ Op0(0b11), Op1(0b000), CRn(0b1101), CRm(0b0000), Op2(0b100),
+	  NULL, reset_unknown, TPIDR_EL1 },
+--
+1.7.12.4
