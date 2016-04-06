@@ -1,4 +1,4 @@
-From 324c8573d93b63d842cd499212b0fb865e13273f Mon Sep 17 00:00:00 2001
+From 2206cb948df129e2634e239e7cbfddce91fbf52c Mon Sep 17 00:00:00 2001
 From: Matt Fleming <matt.fleming@intel.com>
 Date: Tue, 25 Aug 2015 16:32:55 +0100
 Subject: [PATCH 1/8] efifb: Add support for 64-bit frame buffer addresses

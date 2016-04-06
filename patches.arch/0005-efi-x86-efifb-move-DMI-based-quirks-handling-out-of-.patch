@@ -1,4 +1,4 @@
-From 867d14426bfd8f7ca3f108a8a4d9b309b12b047f Mon Sep 17 00:00:00 2001
+From ba9afb41ea2f37aa997db80dc39b930bb64c08ef Mon Sep 17 00:00:00 2001
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Date: Thu, 10 Mar 2016 12:40:04 +0700
 Subject: [PATCH 5/8] efi/x86: efifb: move DMI based quirks handling out of

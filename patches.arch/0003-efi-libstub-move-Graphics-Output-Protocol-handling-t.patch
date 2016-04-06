@@ -1,4 +1,4 @@
-From 7ab399416b42367a2b00169f024933044fab5b3a Mon Sep 17 00:00:00 2001
+From fd15b02728289c93a74cd1d1309e5adfeeec6cff Mon Sep 17 00:00:00 2001
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Date: Thu, 10 Mar 2016 12:40:02 +0700
 Subject: [PATCH 3/8] efi: libstub: move Graphics Output Protocol handling to

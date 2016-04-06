@@ -1,4 +1,4 @@
-From 345fcedd30d965cf33febaea24b9eab24e94d281 Mon Sep 17 00:00:00 2001
+From 1350f899b0ad852e1752ed17f0687d6729c8ba30 Mon Sep 17 00:00:00 2001
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Date: Thu, 10 Mar 2016 12:40:07 +0700
 Subject: [PATCH 8/8] efi/arm*: efifb: expose efifb platform device if GOP is
@@ -14,9 +14,9 @@ Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Signed-off-by: Matt Fleming <mfleming@suse.de>
 ---
  arch/arm64/include/asm/efi.h |  4 ++++
- arch/arm64/kernel/efi.c      | 13 +++++++++++++
+ arch/arm64/kernel/efi.c      | 14 ++++++++++++++
  drivers/video/fbdev/Kconfig  |  2 +-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+ 3 files changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/include/asm/efi.h b/arch/arm64/include/asm/efi.h
 index 4661700..a348f9d 100644
@@ -34,10 +34,18 @@ index 4661700..a348f9d 100644
  
  /*
 diff --git a/arch/arm64/kernel/efi.c b/arch/arm64/kernel/efi.c
-index 7d6e5ae..4077df8 100644
+index 7d6e5ae..68464a2 100644
 --- a/arch/arm64/kernel/efi.c
 +++ b/arch/arm64/kernel/efi.c
-@@ -234,6 +234,19 @@ void __init efi_init_fdt(void *fdt)
+@@ -26,6 +26,7 @@
+ #include <linux/sched.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
++#include <linux/platform_device.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/efi.h>
+@@ -234,6 +235,19 @@ void __init efi_init_fdt(void *fdt)
  	early_memunmap(memmap.map, params.mmap_size);
  }
  
@@ -66,7 +74,6 @@ index d1e1e17..cecfaf5 100644
  config FB_EFI
  	bool "EFI-based Framebuffer Support"
 -	depends on (FB = y) && X86 && EFI
-References: bnc#974215
 +	depends on (FB = y) && !IA64 && EFI
  	select FB_CFB_FILLRECT
  	select FB_CFB_COPYAREA

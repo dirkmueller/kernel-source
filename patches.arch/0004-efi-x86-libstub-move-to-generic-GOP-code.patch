@@ -1,8 +1,8 @@
-From cb25554497eaef1aa4ae481a9a77285ba43d3acf Mon Sep 17 00:00:00 2001
+From 03ec5d854db3b6231b0da2789a9f8800dc3aa320 Mon Sep 17 00:00:00 2001
 From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Date: Thu, 10 Mar 2016 12:40:03 +0700
 Subject: [PATCH 4/8] efi/x86: libstub: move to generic GOP code
-Patch-mainline: Submitted, https://lkml.kernel.org/1457588408-19309-4-git-send-email-ard.biesheuvel@linaro.org
+Patch-mainline: Submitted, https://lkml.kernel.org/r/1457588408-19309-4-git-send-email-ard.biesheuvel@linaro.org
 References: bnc#974215
 
 Switch to the generic Graphics Output Protocol handling in libstub, and
