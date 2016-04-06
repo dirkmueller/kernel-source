@@ -1,0 +1,33 @@
+From a0315dd8adb89217895b4dce3051178904bd58c7 Mon Sep 17 00:00:00 2001
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Date: Thu, 10 Mar 2016 12:40:01 +0700
+Subject: [PATCH 2/8] efi: make install_configuration_table() boot service
+ usable
+Patch-mainline: Submitted, https://lkml.kernel.org/r/1457588408-19309-2-git-send-email-ard.biesheuvel@linaro.org
+References: bnc#974215
+
+This patch redeclares efi_boot_services_t::install_configuration_table
+as a function pointer so that the boot service is callable as a function.
+
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Matt Fleming <mfleming@suse.de>
+---
+ include/linux/efi.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index c2be93d..dc094c6 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -279,7 +279,7 @@ typedef struct {
+ 	void *register_protocol_notify;
+ 	void *locate_handle;
+ 	void *locate_device_path;
+-	void *install_configuration_table;
++	efi_status_t (*install_configuration_table)(efi_guid_t *, void *);
+ 	void *load_image;
+ 	void *start_image;
+ 	void *exit;
+-- 
+2.7.3
+
