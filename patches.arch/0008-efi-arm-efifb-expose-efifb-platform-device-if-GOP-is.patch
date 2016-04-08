@@ -14,9 +14,9 @@ Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Signed-off-by: Matt Fleming <mfleming@suse.de>
 ---
  arch/arm64/include/asm/efi.h |  4 ++++
- arch/arm64/kernel/efi.c      | 14 ++++++++++++++
+ arch/arm64/kernel/efi.c      | 17 +++++++++++++++++
  drivers/video/fbdev/Kconfig  |  2 +-
- 3 files changed, 19 insertions(+), 1 deletion(-)
+ 3 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm64/include/asm/efi.h b/arch/arm64/include/asm/efi.h
 index 4661700..a348f9d 100644
@@ -34,7 +34,7 @@ index 4661700..a348f9d 100644
  
  /*
 diff --git a/arch/arm64/kernel/efi.c b/arch/arm64/kernel/efi.c
-index 7d6e5ae..68464a2 100644
+index 7d6e5ae..b8cafa6 100644
 --- a/arch/arm64/kernel/efi.c
 +++ b/arch/arm64/kernel/efi.c
 @@ -26,6 +26,7 @@
@@ -45,10 +45,15 @@ index 7d6e5ae..68464a2 100644
  
  #include <asm/cacheflush.h>
  #include <asm/efi.h>
-@@ -234,6 +235,19 @@ void __init efi_init_fdt(void *fdt)
- 	early_memunmap(memmap.map, params.mmap_size);
- }
+@@ -232,7 +233,23 @@ void __init efi_init_fdt(void *fdt)
  
+ 	reserve_regions();
+ 	early_memunmap(memmap.map, params.mmap_size);
++
++	if (screen_info.orig_video_isVGA == VIDEO_TYPE_EFI)
++		memblock_reserve(screen_info.lfb_base, screen_info.lfb_size);
++}
++
 +static int __init register_gop_device(void)
 +{
 +	void *pd;
@@ -59,12 +64,11 @@ index 7d6e5ae..68464a2 100644
 +	/* the efifb driver accesses screen_info directly, no need to pass it */
 +	pd = platform_device_register_simple("efi-framebuffer", 0, NULL, 0);
 +	return PTR_ERR_OR_ZERO(pd);
-+}
+ }
 +subsys_initcall(register_gop_device);
-+
+ 
  static bool __init efi_virtmap_init(void)
  {
- 	efi_memory_desc_t *md;
 diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
 index d1e1e17..cecfaf5 100644
 --- a/drivers/video/fbdev/Kconfig
