@@ -1,0 +1,49 @@
+From a00d8919bd447cc2d61ba71e4bc714843207603d Mon Sep 17 00:00:00 2001
+From: Alexander Graf <agraf@suse.de>
+Date: Wed, 13 Jul 2016 17:39:52 +0200
+Subject: [PATCH] arm64: Add config to limit user space to 47bits
+Patch-Mainline: never, this is rejected as workaround for broken apps
+
+Some user space applications are known to break with 48 bits virtual
+address space. As interim step until the world is healed and everyone
+embraces correct code, this patch allows to only expose 47 bits of
+virtual address space to user space.
+
+Signed-off-by: Alexander Graf <agraf@suse.de>
+---
+ arch/arm64/Kconfig              |    9 +++++++++
+ arch/arm64/include/asm/memory.h |    4 ++++
+ 2 files changed, 13 insertions(+)
+
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -494,6 +494,15 @@ config ARM64_VA_BITS
+ 	default 47 if ARM64_VA_BITS_47
+ 	default 48 if ARM64_VA_BITS_48
+ 
++config ARM64_USER_VA_BITS_47
++	bool "Limit user space to 47 bits address space"
++	depends on ARM64_VA_BITS_48
++	help
++	  Some user space applications are known to break with 48 bits virtual
++	  address space. As interim step until the world is healed and everyone
++	  embraces correct code, this option allows to only expose 47 bits of
++	  virtual address space to user space. If unsure say N here.
++
+ config CPU_BIG_ENDIAN
+        bool "Build big-endian kernel"
+        help
+--- a/arch/arm64/include/asm/memory.h
++++ b/arch/arm64/include/asm/memory.h
+@@ -56,7 +56,11 @@
+ #define PCI_IO_END		(MODULES_VADDR - SZ_2M)
+ #define PCI_IO_START		(PCI_IO_END - PCI_IO_SIZE)
+ #define FIXADDR_TOP		(PCI_IO_START - SZ_2M)
++#ifdef CONFIG_ARM64_USER_VA_BITS_47
++#define TASK_SIZE_64		(UL(1) << (VA_BITS - 1))
++#else
+ #define TASK_SIZE_64		(UL(1) << VA_BITS)
++#endif
+ 
+ #ifdef CONFIG_COMPAT
+ #define TASK_SIZE_32		UL(0x100000000)
